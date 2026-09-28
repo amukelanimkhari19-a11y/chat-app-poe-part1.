@@ -1,0 +1,119 @@
+package com.iie.chatapp;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class LoginTest {
+
+    private Login login;
+
+    @BeforeEach
+    void setUp() {
+        login = new Login();
+    }
+
+    @Test
+    void testCheckUserName_correctlyFormatted() {
+        assertTrue(login.checkUserName("kyl_1"));
+    }
+
+    @Test
+    void testCheckUserName_incorrectlyFormatted() {
+        assertFalse(login.checkUserName("kyle!!!!!!"));
+    }
+
+    @Test
+    void testCheckPasswordComplexity_meetsRequirements() {
+        assertTrue(login.checkPasswordComplexity("Ch&&sec@ke99!"));
+    }
+
+    @Test
+    void testCheckPasswordComplexity_doesNotMeetRequirements() {
+        assertFalse(login.checkPasswordComplexity("password"));
+    }
+
+    @Test
+    void testCheckCellPhoneNumber_correctlyFormatted() {
+        assertTrue(login.checkCellPhoneNumber("+27838968976"));
+    }
+
+    @Test
+    void testCheckCellPhoneNumber_incorrectlyFormatted() {
+        assertFalse(login.checkCellPhoneNumber("08966553"));
+    }
+
+    @Test
+    void testRegisterUser_invalidUsername() {
+        login = new Login("kyle!!!!!!", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertEquals(
+                "Username is not correctly formatted; please ensure that your username "
+                        + "contains an underscore and is no more than five characters in length.",
+                login.registerUser()
+        );
+    }
+
+    @Test
+    void testRegisterUser_invalidPassword() {
+        login = new Login("kyl_1", "password", "+27838968976", "Kyle", "Smith");
+        assertEquals(
+                "Password is not correctly formatted; please ensure that the password "
+                        + "contains at least eight characters, a capital letter, a number, "
+                        + "and a special character.",
+                login.registerUser()
+        );
+    }
+
+    @Test
+    void testRegisterUser_invalidCellPhone() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "08966553", "Kyle", "Smith");
+        assertEquals(
+                "Cell phone number is incorrectly formatted or does not contain an "
+                        + "international code; please correct the number and try again.",
+                login.registerUser()
+        );
+    }
+
+    @Test
+    void testRegisterUser_success() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertEquals(
+                "Username successfully captured. Password successfully captured. "
+                        + "Cell phone number successfully added.",
+                login.registerUser()
+        );
+    }
+
+    @Test
+    void testLoginUser_successful() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertTrue(login.loginUser("kyl_1", "Ch&&sec@ke99!"));
+    }
+
+    @Test
+    void testLoginUser_failed() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertFalse(login.loginUser("kyl_1", "wrongPassword1!"));
+    }
+
+    @Test
+    void testReturnLoginStatus_welcomeMessage() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertEquals(
+                "Welcome Kyle, Smith it is great to see you.",
+                login.returnLoginStatus("kyl_1", "Ch&&sec@ke99!")
+        );
+    }
+
+    @Test
+    void testReturnLoginStatus_incorrectCredentials() {
+        login = new Login("kyl_1", "Ch&&sec@ke99!", "+27838968976", "Kyle", "Smith");
+        assertEquals(
+                "Username or password incorrect, please try again.",
+                login.returnLoginStatus("kyl_1", "wrongPassword1!")
+        );
+    }
+}
